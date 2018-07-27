@@ -47,7 +47,7 @@ class UlauncherDbusService(dbus.service.Object):
         self.window.toggle_window()
         
     @dbus.service.method(DBUS_SERVICE)
-    def start_with_cmd(self, cmd="test"):
+    def start_with_cmd(self, cmd):
     	self.window.input.set_text(cmd)
 
 
@@ -105,7 +105,7 @@ def main():
     if instance != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
         toggle_window = dbus.SessionBus().get_object(DBUS_SERVICE, DBUS_PATH).get_dbus_method("toggle_window")
         toggle_window()
-        if options.cmd != "":
+        if options.cmd != "" and options.cmd is not None:
 	        start_with_cmd = dbus.SessionBus().get_object(DBUS_SERVICE, DBUS_PATH).get_dbus_method("start_with_cmd")
         	start_with_cmd(options.cmd)
         return
@@ -130,7 +130,7 @@ def main():
     if not options.hide_window:
         window.show()
         
-    if options.cmd != "":
+    if options.cmd != "" and options.cmd is not None :
     	window.input.set_text(options.cmd)
 
     if Settings.get_instance().get_property('show-indicator-icon'):
