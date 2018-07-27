@@ -91,6 +91,8 @@ def get_options():
     parser.add_option(
         "--dev", action="store_true",
         help=_("Development mode"))
+    parser.add_option(
+        "--cmd", help=_("Start with this command"))
     (options, args) = parser.parse_args()
 
     return options

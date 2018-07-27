@@ -45,6 +45,10 @@ class UlauncherDbusService(dbus.service.Object):
     @dbus.service.method(DBUS_SERVICE)
     def toggle_window(self):
         self.window.toggle_window()
+        
+    @dbus.service.method(DBUS_SERVICE)
+    def start_with_cmd(self, cmd="test"):
+    	self.window.input.set_text(cmd)
 
 
 class SignalHandler(object):
@@ -95,15 +99,19 @@ def main():
     DBusGMainLoop(set_as_default=True)
     bus = dbus.SessionBus()
     instance = bus.request_name(DBUS_SERVICE)
+    
+    options = get_options()
 
     if instance != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
         toggle_window = dbus.SessionBus().get_object(DBUS_SERVICE, DBUS_PATH).get_dbus_method("toggle_window")
         toggle_window()
+        if options.cmd != "":
+	        start_with_cmd = dbus.SessionBus().get_object(DBUS_SERVICE, DBUS_PATH).get_dbus_method("start_with_cmd")
+        	start_with_cmd(options.cmd)
         return
 
     _create_dirs()
 
-    options = get_options()
     setup_logging(options)
     logger = logging.getLogger('ulauncher')
     logger.info('Ulauncher version %s' % get_version())
@@ -121,6 +129,9 @@ def main():
     UlauncherDbusService(window)
     if not options.hide_window:
         window.show()
+        
+    if options.cmd != "":
+    	window.input.set_text(options.cmd)
 
     if Settings.get_instance().get_property('show-indicator-icon'):
         AppIndicator.get_instance().show()
