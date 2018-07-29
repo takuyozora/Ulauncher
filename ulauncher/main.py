@@ -134,19 +134,15 @@ def main():
     UlauncherDbusService(window)
     if not options.hide_window:
         window.show()
-        
+
     if options.cmd != "" and options.cmd is not None :
         start_with_command(window, options.cmd)
 
     if Settings.get_instance().get_property('show-indicator-icon'):
         AppIndicator.get_instance().show()
 
-    # workaround to make Ctrl+C quiting the app
-    signal_handler = SignalHandler(window)
-    gtk_thread = run_async(Gtk.main)()
     try:
-        while gtk_thread.is_alive() and not signal_handler.killed():
-            time.sleep(0.5)
+        Gtk.main()
     except KeyboardInterrupt:
         logger.warn('On KeyboardInterrupt')
     finally:
