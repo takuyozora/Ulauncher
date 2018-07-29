@@ -36,6 +36,11 @@ def _create_dirs():
         os.makedirs(CACHE_DIR)
 
 
+def start_with_command(window, cmd):
+    window.input.set_text(cmd)
+    window.input.set_position(-1)
+
+
 class UlauncherDbusService(dbus.service.Object):
     def __init__(self, window):
         self.window = window
@@ -48,7 +53,7 @@ class UlauncherDbusService(dbus.service.Object):
         
     @dbus.service.method(DBUS_SERVICE)
     def start_with_cmd(self, cmd):
-    	self.window.input.set_text(cmd)
+        start_with_command(self.window, cmd)
 
 
 class SignalHandler(object):
@@ -106,8 +111,8 @@ def main():
         toggle_window = dbus.SessionBus().get_object(DBUS_SERVICE, DBUS_PATH).get_dbus_method("toggle_window")
         toggle_window()
         if options.cmd != "" and options.cmd is not None:
-	        start_with_cmd = dbus.SessionBus().get_object(DBUS_SERVICE, DBUS_PATH).get_dbus_method("start_with_cmd")
-        	start_with_cmd(options.cmd)
+            start_with_cmd = dbus.SessionBus().get_object(DBUS_SERVICE,DBUS_PATH).get_dbus_method("start_with_cmd")
+            start_with_cmd(options.cmd)
         return
 
     _create_dirs()
@@ -131,7 +136,7 @@ def main():
         window.show()
         
     if options.cmd != "" and options.cmd is not None :
-    	window.input.set_text(options.cmd)
+        start_with_command(window, options.cmd)
 
     if Settings.get_instance().get_property('show-indicator-icon'):
         AppIndicator.get_instance().show()
